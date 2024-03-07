@@ -1,9 +1,20 @@
 import tkinter as tk
 
 Label_Fonts = ("Arial", 14)
+
+
 # ---------------------------- PASSWORD GENERATOR ------------------------------- #
 
 # ---------------------------- SAVE PASSWORD ------------------------------- #
+def add_data():
+    with open("data.txt", "a") as file:
+        email = str(username_entry.get())
+        password = str(password_entry.get())
+        website = str(web_entry.get())
+        file.write(f'Website: {website} || Email: {email} || Password: {password}\n')
+        password_entry.delete(0, tk.END)
+        web_entry.delete(0, tk.END)
+
 
 # ---------------------------- UI SETUP ------------------------------- #
 
@@ -26,15 +37,17 @@ password_label.grid(column=0, row=3)
 # Entry's
 web_entry = tk.Entry(font=Label_Fonts, width=40)
 web_entry.grid(column=1, row=1, columnspan=2)
+web_entry.focus()
 username_entry = tk.Entry(font=Label_Fonts, width=40)
 username_entry.grid(column=1, row=2, columnspan=2)
+username_entry.insert(0, "hasanforaty@gmail.com")
 password_entry = tk.Entry(font=Label_Fonts, width=20)
 password_entry.grid(column=1, row=3)
 
 # Buttons
 generate_button = tk.Button(windows, text="Generate Password", font=Label_Fonts)
 generate_button.grid(column=2, row=3)
-add_button = tk.Button(windows, text="Add Password", width=30)
+add_button = tk.Button(windows, text="Add Password", width=30, command=add_data)
 add_button.grid(column=1, row=4, columnspan=2)
 
 windows.mainloop()
