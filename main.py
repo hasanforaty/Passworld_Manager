@@ -1,5 +1,7 @@
 import tkinter as tk
 from tkinter import messagebox as ms
+import pyperclip
+
 
 Label_Fonts = ("Arial", 14)
 from random import randint, choice, shuffle
@@ -29,6 +31,7 @@ def create_password():
 def generate_password_button():
     password_entry.delete(0, tk.END)
     password = create_password()
+    pyperclip.copy(password)
     password_entry.insert(0, password)
 
 
