@@ -1,7 +1,7 @@
 import tkinter as tk
 from tkinter import messagebox as ms
 import pyperclip
-
+import json
 
 Label_Fonts = ("Arial", 14)
 from random import randint, choice, shuffle
@@ -46,13 +46,39 @@ def add_data():
     is_ok = ms.askyesno(title=website, message=f"This are the details entered : \n Email: {email} \n "
                                                f"Password: {password}\n is it oky to continue?")
     if is_ok:
-        with open("data.txt", "a") as file:
-            file.write(f'Website: {website} || Email: {email} || Password: {password}\n')
+        try:
+            with open("data.json", "r") as file:
+                data = json.load(file)
+        except FileNotFoundError:
+            with open("data.json", "w") as file:
+                data = {}
+                json.dump(data, file, indent=4)
+        finally:
+            data.update({website: {"email": email, "password": password}})
+        with open("data.json", "w") as file:
+            json.dump(data, file, indent=4)
             password_entry.delete(0, tk.END)
             web_entry.delete(0, tk.END)
 
 
-# ---------------------------- UI SETUP ------------------------------- #
+# ---------------------------- Search Functionality ------------------------------- #
+
+def search():
+    webSite = str(web_entry.get())
+    if webSite == "":
+        ms.showerror("Error", "please enter Website for search function")
+        return
+    try:
+        with open("data.json", "r") as file:
+            data = json.load(file)[webSite]
+            ms.showinfo(title=webSite, message=f"username : {data['email']} \npassword: {data['password']}")
+    except FileNotFoundError:
+        ms.showerror("Error", "There isn't any data Stored")
+    except KeyError:
+        ms.showerror("Error", "Website not found")
+
+    # ---------------------------- UI SETUP ------------------------------- #
+
 
 windows = tk.Tk()
 windows.title("Password Manager")
@@ -71,8 +97,8 @@ password_label = tk.Label(windows, text="Password:", font=Label_Fonts)
 password_label.grid(column=0, row=3)
 
 # Entry's
-web_entry = tk.Entry(font=Label_Fonts, width=40)
-web_entry.grid(column=1, row=1, columnspan=2)
+web_entry = tk.Entry(font=Label_Fonts,width=20)
+web_entry.grid(column=1, row=1)
 web_entry.focus()
 username_entry = tk.Entry(font=Label_Fonts, width=40)
 username_entry.grid(column=1, row=2, columnspan=2)
@@ -85,5 +111,7 @@ generate_button = tk.Button(windows, text="Generate Password", font=Label_Fonts,
 generate_button.grid(column=2, row=3)
 add_button = tk.Button(windows, text="Add Password", width=30, command=add_data)
 add_button.grid(column=1, row=4, columnspan=2)
+search_button = tk.Button(windows, text="Search", width=13, command=search)
+search_button.grid(column=2, row=1, columnspan=2)
 
 windows.mainloop()
